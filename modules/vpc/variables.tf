@@ -1,30 +1,30 @@
 variable "name" {
-  description = "The name of the VPC"
+  description = "VPC Name"
   type        = string
 }
 
 variable "cidr" {
-  description = "The CIDR block for the VPC"
+  description = "VPC CIDR"
   type        = string
 }
 
 variable "azs" {
-  description = "List of availability zones"
+  description = "Availability Zones"
   type        = list(string)
 }
 
 variable "private_subnets" {
-  description = "List of private subnets"
+  description = "Private Subnets"
   type        = list(string)
 }
 
 variable "public_subnets" {
-  description = "List of public subnets"
+  description = "Public Subnets"
   type        = list(string)
 }
 
 variable "tags" {
-  description = "Tags to assign to resources"
+  description = "Tags for resources"
   type        = map(string)
   default     = {}
 }

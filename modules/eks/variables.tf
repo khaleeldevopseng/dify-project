@@ -1,25 +1,25 @@
 variable "cluster_name" {
-  description = "Name of the EKS cluster"
+  description = "EKS Cluster Name"
   type        = string
 }
 
 variable "cluster_version" {
-  description = "EKS Kubernetes version"
+  description = "EKS Cluster Version"
   type        = string
 }
 
-variable "tags_for_nodes" {
-  description = "Tags for the node group"
-  type        = map(string)
+variable "vpc_id" {
+  description = "VPC ID"
+  type        = string
 }
+
 variable "subnet_ids" {
-  description = "Subnets for EKS cluster nodes"
+  description = "List of subnet IDs for the EKS cluster"
   type        = list(string)
 }
 
 variable "tags" {
-  description = "Tags to assign to resources"
+  description = "Tags for EKS cluster"
   type        = map(string)
   default     = {}
 }
-
