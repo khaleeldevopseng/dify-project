@@ -1,35 +1,73 @@
 provider "aws" {
-  region = var.aws_region
+  region = "us-west-2"
 }
 
+# VPC Module
 module "vpc" {
-  source  = "./modules/vpc"
-  name    = var.vpc_name
-  cidr    = var.vpc_cidr
-  azs     = var.azs
+  source  = "terraform-aws-modules/vpc/aws"
+  version = "~> 3.19"
 
-  private_subnets = var.private_subnets
-  public_subnets  = var.public_subnets
+  name = "my-vpc"
+  cidr = "10.0.0.0/16"
 
-  tags = var.tags
+  azs             = ["us-west-2a", "us-west-2b", "us-west-2c"]
+  private_subnets = ["10.0.1.0/24", "10.0.2.0/24"]
+  public_subnets  = ["10.0.3.0/24", "10.0.4.0/24"]
+
+  enable_nat_gateway = true
+  single_nat_gateway = true
+
+  tags = {
+    Environment = "dev"
+    Project     = "example"
+  }
 }
 
+# EKS Module
 module "eks" {
-  source          = "./modules/eks"
-  cluster_name    = var.cluster_name
-  cluster_version = var.cluster_version
+  source          = "terraform-aws-modules/eks/aws"
+  cluster_name    = "my-eks-cluster"
+  cluster_version = "1.26"
   vpc_id          = module.vpc.vpc_id
-  subnet_ids      = module.vpc.private_subnets
 
-  tags = var.tags
+  # Use 'subnet_ids' instead of 'subnets'
+  subnet_ids = module.vpc.public_subnets
+
+  # Worker Node Configuration (Updated for the latest versions)
+  node_groups = {
+    eks_nodes = {
+      desired_capacity = 2
+      max_capacity     = 3
+      min_capacity     = 1
+      instance_type    = "t3.medium"
+    }
+  }
+
+  tags = {
+    Environment = "dev"
+    Project     = "example"
+  }
 }
+
+# Uncomment and adjust if you need to pass more specific parameters
+# node_groups = {
+#   eks_nodes = {
+#     desired_capacity = 2
+#     max_capacity     = 3
+#     min_capacity     = 1
+#     instance_type    = "t3.medium"
+#   }
+# }
+
 
 module "ec2" {
   source        = "./modules/ec2"
-  instance_type = var.instance_type
-  ami_id        = var.ami_id
-  subnet_id     = module.vpc.public_subnets[0] # Use public subnets for EC2
-  vpc_id        = module.vpc.vpc_id # Ensure the VPC ID is passed here if needed
-
-  tags = var.tags
+  ami_id        = "ami-05d38da78ce859165"
+  instance_type = "t3.medium"
+  subnet_id     = module.vpc.public_subnets[0] # First public subnet from the VPC module
+  tags = {
+    Name        = "dify-instance"
+    Environment = "dev"
+    Project     = "example"
+  }
 }

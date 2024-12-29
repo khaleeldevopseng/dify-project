@@ -1,25 +1,13 @@
-variable "cluster_name" {
-  description = "EKS Cluster Name"
-  type        = string
-}
-
-variable "cluster_version" {
-  description = "EKS Cluster Version"
-  type        = string
-}
-
-variable "vpc_id" {
-  description = "VPC ID"
-  type        = string
-}
-
 variable "subnet_ids" {
-  description = "List of subnet IDs for the EKS cluster"
+  description = "List of subnet IDs where EKS nodes will be provisioned."
   type        = list(string)
 }
 
 variable "tags" {
-  description = "Tags for EKS cluster"
+  description = "A map of tags to assign to resources."
   type        = map(string)
-  default     = {}
+  default     = {
+    Environment = "dev"
+    Project     = "example"
+  }
 }
